@@ -1,7 +1,7 @@
 package rpg.component;
 
 import rpg.gameobject.GameObject;
-import rpg.texturefactory.TextureFactory;
+import rpg.texture.TextureFactory;
 
 import com.badlogic.gdx.graphics.Texture;
 

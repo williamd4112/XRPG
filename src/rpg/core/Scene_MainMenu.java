@@ -1,6 +1,6 @@
 package rpg.core;
 import rpg.controller.SceneCamera;
-import rpg.texturefactory.TextureFactory;
+import rpg.texture.TextureFactory;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;

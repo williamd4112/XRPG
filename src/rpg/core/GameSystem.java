@@ -1,16 +1,7 @@
 package rpg.core;
 
-import java.io.IOException;
-
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.Array;
-
 import rpg.component.PlayerControlPanel;
-import rpg.controller.ControlPanel;
-import rpg.controller.PlayerController;
 import rpg.gameobject.Character;
-import rpg.gameobject.*;
-import rpg.item.Item;
 
 public class GameSystem {
 	//only one instance

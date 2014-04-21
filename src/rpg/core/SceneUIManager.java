@@ -1,8 +1,10 @@
 package rpg.core;
 
 import java.util.Arrays;
+import java.util.Stack;
 
 import rpg.UI.dialog.Dialog;
+import rpg.UI.menu.Menu;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -10,7 +12,9 @@ import com.badlogic.gdx.utils.TimeUtils;
 public class SceneUIManager {
 	//Dialog container 
 	protected Array<Dialog> dialogBox;
+	protected Stack<Menu> menuBox;
 	protected int index = 0;
+	
 	//Word displaying 
 	protected char[] buffer;
 	protected String prePage;
@@ -31,6 +35,20 @@ public class SceneUIManager {
 	{
 		lastTime = TimeUtils.nanoTime();
 		buffer = new char[4096];
+	}
+	
+	//Menu will use this method to add menu
+	public void addMenu(Menu menu)
+	{
+		if(this.menuBox == null)
+			this.menuBox = new Stack<Menu>();
+		this.menuBox.add(menu);
+	}
+	
+	public void removeMenu()
+	{
+		if(this.menuBox != null)
+			this.menuBox.pop();
 	}
 	
 	//Process dialog (if any dialog in the box , the game will stop

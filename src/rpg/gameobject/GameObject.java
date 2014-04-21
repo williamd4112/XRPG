@@ -1,32 +1,16 @@
 package rpg.gameobject;
 
-import java.io.IOException;
-import java.util.HashMap;
-
 import rpg.component.Animator;
 import rpg.component.Component;
 import rpg.component.PlayerControlPanel;
 import rpg.component.RigidBody;
 import rpg.component.Sprite;
-import rpg.controller.PlayerController;
-import rpg.core.Scene_Level;
 import rpg.event.Event;
-import rpg.phys.Line2D;
-import rpg.texturefactory.TextureFactory;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTile;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.ObjectMap.Entries;
 import com.badlogic.gdx.utils.ObjectMap.Values;
-import com.badlogic.gdx.utils.TimeUtils;
 
 //GameObjec is usually used as a base class
 public class GameObject implements Disposable , Comparable{
@@ -137,7 +121,6 @@ public class GameObject implements Disposable , Comparable{
 	public void update()
 	{
 		//Update components
-		
 		if(components != null){
 			for(Values<Component> it = components.values() ; it.hasNext ;){
 				it.next().update();

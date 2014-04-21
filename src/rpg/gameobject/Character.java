@@ -1,12 +1,6 @@
 package rpg.gameobject;
 
-import java.io.IOException;
-
-import com.badlogic.gdx.utils.Array;
-
 import rpg.component.Animator;
-import rpg.component.Component;
-import rpg.component.PlayerControlPanel;
 import rpg.component.RigidBody;
 import rpg.component.Sprite;
 

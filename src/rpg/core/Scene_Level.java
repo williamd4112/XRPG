@@ -3,7 +3,6 @@ package rpg.core;
 import java.io.IOException;
 
 import rpg.UI.dialog.Dialog;
-import rpg.action.Action_showDialog;
 import rpg.controller.SceneCamera;
 import rpg.event.Event;
 import rpg.gameobject.Character;
@@ -42,28 +41,19 @@ public class Scene_Level extends Scene implements Screen {
 		this.eventsManager = new SceneEventManager(this);
 		
 		//Test Dialog
-		Dialog dialog = new Dialog(this);
-		String p1 = "NPC1 : \nMy name is Kirito. Welcome to Sword Art Online.\n";
-		String p2 = "NPC1 : \nThis is second page.\n";
-		String p3 = "NPC1 : \nThis is third page.\n";
- 		dialog.addPage(p1);
- 		dialog.addPage(p2);
- 		dialog.addPage(p3);
+		Object[] params = new Object[2];
+		
+		String[] context = {"NPC1: \nWelcome to Sword Art Online." , "NPC1 :\nMy name is kirito , yoroshiku ."};
  		
-		Dialog dialog2 = new Dialog(this);
-		String p12 = "NPC2 : \nMy name is Kirito. Welcome to Sword Art Online.\n";
-		String p22 = "NPC2 : \nThis is second page.\n";
-		String p32 = "NPC2 : \nThis is third page.\n";
- 		dialog2.addPage(p12);
- 		dialog2.addPage(p22);
- 		dialog2.addPage(p32);
- 		
+		params[0] = this;
+		params[1] = context;
+		
 		Event event1 = new Event(this.objectManager.getObjectlist().get(1) 
 				, Event.InvokeType.PARALLEL
 				, Event.TriggerType.INTERACT 
 				, Event.CycleType.REPEATABLE);
-		event1.addAction(new Action_showDialog(this , dialog , event1));
-		event1.addAction(new Action_showDialog(this , dialog2 , event1));
+		event1.addAction("showDialog", params);
+		event1.addAction("setMoveRoute" , new Object[]{this.objectManager.getObjectlist().get(1) , new int[]{2 , 4 , 4 , 6 , 6 , 2}} );
 		
 		this.eventsManager.registerEvent(event1);
 		

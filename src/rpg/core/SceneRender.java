@@ -5,13 +5,11 @@ import rpg.component.RigidBody;
 import rpg.component.Sprite;
 import rpg.font.FontFactory;
 import rpg.gameobject.GameObject;
-import rpg.texturefactory.TextureFactory;
+import rpg.texture.TextureFactory;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -20,7 +18,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.utils.Array;
 
@@ -78,7 +75,6 @@ public class SceneRender {
 		this.shapeRender = new ShapeRenderer();
 		
 		//Dialog
-	
 		this.background = TextureFactory.getInstance().genSkin("01-Dialog");
 		
 	}
@@ -109,6 +105,11 @@ public class SceneRender {
 		this.width = w;
 		this.height = h;
 		this.font = FontFactory.genFont("AGaramondPro-Regular.otf", height);
+		
+	}
+	
+	private void renderMenu()
+	{
 		
 	}
 	

@@ -13,7 +13,9 @@ import rpg.action.Action;
 import rpg.controller.ControlPanel;
 import rpg.core.GameSystem;
 import rpg.core.Scene;
-import rpg.texturefactory.TextureFactory;
+import rpg.texture.TextureFactory;
+
+//Remember , all class except renderer only hold non-graphical data
 
 public class Dialog implements InputProcessor {
 	
@@ -21,23 +23,18 @@ public class Dialog implements InputProcessor {
 	protected InputProcessor previousControl;
 	//Scene which dialog in
 	protected Scene scene;
-	//usually use default 
-	protected Texture background;
 	//store the dialog page in string (Scene will process this string , analyze \n)
 	protected Array<String> context;
 	//head picture (optional)
-	protected Texture head;
+	protected String head;
 	//body picture (optional)
-	protected Texture body;
+	protected String body;
 	//context index
 	protected int index = 0;
 	//render will char by char write out the context , this is speed
 	protected long writeInterval = 5;
 	//fade in , fade out speed;
 	protected long fadeInterval = 5;
-	//dialog left bottom corner (usually default)
-	protected int x = 20;
-	protected int y = 20;
 	//width , height will depend on screen width and height
 	protected int width;
 	protected int height;
@@ -50,7 +47,6 @@ public class Dialog implements InputProcessor {
 	public Dialog(Scene scene)
 	{
 		this.context = new Array<String>();
-		//this.background = TextureFactory.getInstance().genSkin("01-Dialog");
 		this.scene = scene;
 		
 	}

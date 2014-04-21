@@ -3,8 +3,12 @@ package rpg.event;
 import java.util.Iterator;
 
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectMap;
+
+import java.lang.reflect.Method;
 
 import rpg.action.Action;
+import rpg.action.ActionFactory;
 import rpg.action.Action.ActionResult;
 import rpg.core.GameSystem;
 import rpg.core.Scene;
@@ -12,8 +16,10 @@ import rpg.gameobject.GameObject;
 
 public class Event {
 	
-	//Type enum
+	//Parameters format ( don't revise this , all action will use Object[] as the only parameter format )
+	private static Class[] paramsFormat;
 	
+	//Type enum
 	//default : PARALLEL
 	public static enum InvokeType{
 		PARALLEL, // one frame , one action
@@ -69,6 +75,11 @@ public class Event {
 		this.invokeType = invokeType;
 		this.triggerType = triggerType;
 		this.cycleType = cycleType;
+		//set up params format
+		if(paramsFormat == null){
+			paramsFormat = new Class[1];
+			paramsFormat[0] = Object[].class;
+		}
 	}
 	//Scene Event
 	public Event(Scene scene , int x , int y , InvokeType invokeType , TriggerType triggerType , CycleType cycleType)
@@ -77,11 +88,15 @@ public class Event {
 		this.scene = scene;
 		this.x = x;
 		this.y = y;
-		
 		//set up type
 		this.invokeType = invokeType;
 		this.triggerType = triggerType;
 		this.cycleType = cycleType;
+		//set up params format
+		if(paramsFormat == null){
+			paramsFormat = new Class[1];
+			paramsFormat[0] = Object[].class;
+		}
 	}
 	//eventhandler will use this method to check is invoke
 	public boolean isInvoke()
@@ -104,14 +119,18 @@ public class Event {
 		return cycleType;
 	}
 	
-	public void addAction(Action action)
+	//Pass method and parameters (method must be in ActionsLibrary) to create a action 
+	public void addAction(String type , Object[] params)
 	{
-		//Lazy instantiate
-		if(this.actionslist == null)
-			this.actionslist = new Array<Action>();
-		this.actionslist.add(action);
+		if(actionslist == null)
+			actionslist = new Array<Action>();
+		
+		Action action = ActionFactory.getInstance().createAction(type,params);
+		
+		if(action != null)
+			actionslist.add(action);
 	}
-	
+		
 	//Set invoke true , in that way , EventHandler will process this event when it check
 	public void invoke()
 	{

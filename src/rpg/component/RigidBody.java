@@ -90,6 +90,7 @@ public class RigidBody extends Rectangle implements Component{
 	public void update() {
 		//Update new coordinate to binding object
 		updateMove();
+		executeCommand();
 		bind.setX(x);
 		bind.setY(y);
 	}
@@ -136,7 +137,7 @@ public class RigidBody extends Rectangle implements Component{
 	public void executeCommand()
 	{
 			//command list is empty
-			if(commandlist.size < 0)
+			if(commandlist.size < 1)
 				return ;
 			
 			boolean result = false;
@@ -187,9 +188,23 @@ public class RigidBody extends Rectangle implements Component{
 			if(result)
 				commandlist.set(index, -1); 
 			
-		}
+	}
+	
+	//Add a move command
+	public void addCommand(int code)
+	{
+		if(this.commandlist == null)
+			this.commandlist = new IntArray();
+		this.commandlist.add(code);
+	}
+	public void addCommand(int[] codes)
+	{
+		if(this.commandlist == null)
+			this.commandlist = new IntArray();
+		this.commandlist.addAll(codes);
+	}
 		
-		//Moving : check is on the move
+	//Moving : check is on the move
 	public boolean moving()
 	{
 			//dest != real x

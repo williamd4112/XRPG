@@ -1,4 +1,4 @@
-package rpg.texturefactory;
+package rpg.texture;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;

@@ -16,12 +16,12 @@ public class UIFactory {
 			instance = new UIFactory();
 		return instance;
 	}
-	
+		
 	//Create dialog only can use this method
 	public Dialog createDialog(Scene location , String type , String[] context) throws DefinitionError
 	{
 		if(type.equals("Normal")){
-			Dialog dlg = new Dialog(location);
+			Dialog dlg = new Dialog();
 			for(String page : context){
 				dlg.addPage(page);
 			}
@@ -33,22 +33,17 @@ public class UIFactory {
 	}
 	
 	//Create menu only can use this method
-	public Menu createMenu(Scene location , String type)
+	public Menu createMenu(String type) throws DefinitionError
 	{
 		if(type.equals("Pause")){
-			return new Menu_Pause(location);
+			return new Menu_Pause();
 		}
 		else if(type.equals("Item")){
-			return new Menu_Item(location);
+			return new Menu_Item();
 		}
 		
 		System.err.println("No such type of menu.");
 		return null;
 	}
 	
-	//Use this to dispose menu
-	public void recycleMenu(Menu menu)
-	{
-		
-	}
 }

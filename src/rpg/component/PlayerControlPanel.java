@@ -4,8 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 
-import rpg.controller.SceneCamera;
+import rpg.action.ActionLibrary;
 import rpg.core.GameSystem;
+import rpg.core.SceneCamera;
 import rpg.gameobject.*;
 import rpg.gameobject.Character;
 
@@ -13,7 +14,7 @@ public class PlayerControlPanel implements Component , InputProcessor {
 	
 	//Controlled Player
 	private Character player;
-	private RigidBody playerRigidbody;
+	private CharcterController controller;
 	
 	//Viewport ( will post to gamesystem
 	private SceneCamera camera;
@@ -28,7 +29,7 @@ public class PlayerControlPanel implements Component , InputProcessor {
 		//Bind the player
 		this.player = (Character)bind;
 		//Bind the rigidbody
-		this.playerRigidbody = (RigidBody) player.getRigidBody();
+		this.controller = player.getCharacterController();
 		//Create a camera to monitor
 		this.camera = new SceneCamera();
 		//Bind the camera to player
@@ -43,20 +44,29 @@ public class PlayerControlPanel implements Component , InputProcessor {
 	public void update() {
 		if(player == null)
 			return;
+		
+		if(Gdx.input.isKeyPressed(Input.Keys.D))
+			controller.stepDash();
+		else
+			controller.stepWalk();
+		
 		if(Gdx.input.isKeyPressed(Input.Keys.DOWN)){
-			playerRigidbody.moveDown();
+			controller.stepDown();
 			return;
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.LEFT)){
-			playerRigidbody.moveLeft();
+			controller.stepLeft();
+			//player.getAnimator().doAnimation();
 			return;
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
-			playerRigidbody.moveRight();
+			controller.stepRight();
+			//player.getAnimator().doAnimation();
 			return;
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.UP)){
-			playerRigidbody.moveUp();
+			controller.stepUp();
+			//player.getAnimator().doAnimation();
 			return;
 		}
 		
@@ -73,8 +83,17 @@ public class PlayerControlPanel implements Component , InputProcessor {
 		if(player == null)
 			return false;
 		switch(keycode){
+		case Input.Keys.C:
+			break;
+		case Input.Keys.D:
+			player.getSprite().setTexure("Hero_Dash");
+			player.getAnimator().setFrequency(4);
+			break;
 		case Input.Keys.ENTER:
-			playerRigidbody.interact();
+			controller.interact();
+			break;
+		case Input.Keys.ESCAPE:
+			ActionLibrary.showMenu(new Object[]{"Pause"});
 			break;
 		}
 		return false;
@@ -82,7 +101,14 @@ public class PlayerControlPanel implements Component , InputProcessor {
 
 	@Override
 	public boolean keyUp(int keycode) {
-		// TODO Auto-generated method stub
+		if(player == null)
+			return false;
+		switch(keycode){
+		case Input.Keys.D:
+			player.getSprite().setTexure("Hero");
+			player.getAnimator().setFrequency(6);
+			break;
+		}
 		return false;
 	}
 
@@ -121,5 +147,6 @@ public class PlayerControlPanel implements Component , InputProcessor {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
 
 }

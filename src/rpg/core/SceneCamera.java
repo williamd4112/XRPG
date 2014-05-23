@@ -1,4 +1,4 @@
-package rpg.controller;
+package rpg.core;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 

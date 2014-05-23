@@ -3,7 +3,6 @@ package rpg.core;
 import java.io.IOException;
 
 import rpg.UI.dialog.Dialog;
-import rpg.controller.SceneCamera;
 import rpg.event.Event;
 import rpg.gameobject.Character;
 import rpg.gameobject.*;
@@ -24,6 +23,7 @@ public class Scene_Level extends Scene implements Screen {
 	public Scene_Level(String level)
 	{
 		super();
+		register();
 		initializeGameObjectManager();
 		initializeUIManager();
 		initializePlayer();
@@ -33,7 +33,11 @@ public class Scene_Level extends Scene implements Screen {
 		initializePhys();
 		initializeEvents();
 	}
-	
+	//register on game system
+	public void register()
+	{
+		GameSystem.getInstance().setScene(this);
+	}
 	//initializing events
 	public void initializeEvents()
 	{
@@ -53,8 +57,8 @@ public class Scene_Level extends Scene implements Screen {
 				, Event.TriggerType.INTERACT 
 				, Event.CycleType.REPEATABLE);
 		event1.addAction("showDialog", params);
-		event1.addAction("setMoveRoute" , new Object[]{this.objectManager.getObjectlist().get(1) , new int[]{2 , 4 , 4 , 6 , 6 , 2}} );
-		
+		event1.addAction("setMoveRoute" , new Object[]{this.objectManager.getObjectlist().get(1) , new int[]{9 , 2 , 3 , 4 , 3 , 3 , 3 , 4 , 4 , 4 , 4 , 4  , 6 , 6 ,6 , 6 ,10 , 1 , 1, 1, 1, 1}} );
+		event1.addAction("waitUntilMoveDoneJam", new Object[]{this.objectManager.getObjectlist().get(1)});
 		this.eventsManager.registerEvent(event1);
 		
 	}
@@ -131,7 +135,7 @@ public class Scene_Level extends Scene implements Screen {
 					obj.update();
 		}
 
-		UIManager.processDialog();
+		UIManager.processUI();
 		eventsManager.processEvent();
 		
 		//Graphic

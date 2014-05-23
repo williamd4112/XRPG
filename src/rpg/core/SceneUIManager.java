@@ -3,16 +3,17 @@ package rpg.core;
 import java.util.Arrays;
 import java.util.Stack;
 
+import rpg.UI.UI;
 import rpg.UI.dialog.Dialog;
 import rpg.UI.menu.Menu;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 
+//Renderer will render all UI in stack , but this will only process top of stack
 public class SceneUIManager {
-	//Dialog container 
-	protected Array<Dialog> dialogBox;
-	protected Stack<Menu> menuBox;
+	//UI Container
+	protected Stack<UI> UIStack;
 	protected int index = 0;
 	
 	//Word displaying 
@@ -26,9 +27,17 @@ public class SceneUIManager {
 		return buffer;
 	}
 	
-	public Array<Dialog> getDialogBox()
+	public Stack<UI> getStack()
 	{
-		return dialogBox;
+		return UIStack;
+	}
+	
+	public boolean isEmptyStack()
+	{
+		if(UIStack != null)
+			return UIStack.isEmpty();
+		else
+			return true;
 	}
 	
 	public SceneUIManager()
@@ -37,57 +46,50 @@ public class SceneUIManager {
 		buffer = new char[4096];
 	}
 	
-	//Menu will use this method to add menu
-	public void addMenu(Menu menu)
+	public void processUI()
 	{
-		if(this.menuBox == null)
-			this.menuBox = new Stack<Menu>();
-		this.menuBox.add(menu);
+		if(UIStack != null){
+			if(!UIStack.isEmpty()){
+				//If there is UI in stack , stop the game ( but in the future will add new class DynamicUI 
+				GameSystem.getInstance().stop();
+				if(UIStack.peek().getClass().getName().equals("rpg.UI.dialog.Dialog")){
+					processDialog(UIStack.peek());
+				}
+				else if(UIStack.peek().getClass().getName().equals("rpg.UI.menu.Menu_Pause")){
+					processMenu(UIStack.peek());
+				}
+			}
+			else{
+				GameSystem.getInstance().resume();
+			}
+		}
 	}
 	
-	public void removeMenu()
+	public void processMenu(UI menu)
 	{
-		if(this.menuBox != null)
-			this.menuBox.pop();
-	}
-	
-	//Process dialog (if any dialog in the box , the game will stop
-	public void processDialog()
-	{
-		//dialogbox not yet init
-		if(dialogBox == null)
-			return;
 		
+	}
+	
+	//Process dialog and word buffer
+	public void processDialog(UI ui)
+	{		
 		//dialogbox is empty or travered all
-		if(dialogBox.size < 1 || index >= dialogBox.size){
-			dialogBox.clear();
-			index = 0;
-			GameSystem.getInstance().resume();
+		if(UIStack == null)
 			return;
-		}
-			
-		//if occur some error
-		if(dialogBox.get(index) == null){
-			index++;
-			return;
-		}
-		else
-			//Set up the game state
-			GameSystem.getInstance().stop();
 		
-		if(dialogBox.get(index).getCurrentPage() == null){
-			System.out.println("remove");
-			//remove current dialog
-			dialogBox.removeIndex(index);
-			//increment index
-			index++;
-			//this dialog done , check if there is a next dialog in box
-			System.out.println(dialogBox.size);
+		if(UIStack.isEmpty())
+			return;
+			
+		Dialog dialog = (Dialog) ui;
+		
+		//All pages have been shown
+		if(dialog.getCurrentPage() == null){
+			UIStack.pop();
 			return;
 		}
 		
 		//if change page
-		if(prePage != dialogBox.get(index).getCurrentPage()){
+		if(prePage != dialog.getCurrentPage()){
 			//Reset buffer and key
 			key = 0;
 			Arrays.fill(buffer, '\0');
@@ -96,30 +98,28 @@ public class SceneUIManager {
 		//Process string into buffer
 		long currentTime = TimeUtils.nanoTime();
 		long dt = currentTime - lastTime;
-		long writeInterval = dialogBox.get(index).getWriteInterval();
+		long writeInterval = dialog.getWriteInterval();
 		
 		if(dt > writeInterval){
-			if(key < dialogBox.get(index).getCurrentPage().length()){
-				dialogBox.get(index).getCurrentPage().getChars(0, key, buffer, 0);
+			if(key < dialog.getCurrentPage().length()){
+				dialog.getCurrentPage().getChars(0, key, buffer, 0);
 				key++;
 			}
 		}
-		prePage = dialogBox.get(index).getCurrentPage();
+		prePage =  dialog.getCurrentPage();
 
 	}
 
 	//Scene obtain a method for the others to add a dialog to it
-	public void addDialog(Dialog dialog)
+	public void pushUI(UI ui)
 	{
-		if(dialogBox == null)
-			dialogBox = new Array<Dialog>();
-		
-		this.dialogBox.add(dialog);
+		if(UIStack == null)
+			UIStack = new Stack<UI>();
+		UIStack.push(ui);
 	}
-	
-	//Scene will use this method when dialog is done
-	public void removeDialog(Dialog dialog)
+	public void popUI()
 	{
-		this.dialogBox.removeValue(dialog, true);
+		if(UIStack != null)
+			UIStack.pop();
 	}
 }

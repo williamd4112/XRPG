@@ -1,4 +1,4 @@
-package rpg.texture;
+package rpg.factory;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -10,6 +10,20 @@ public class TextureFactory {
 	private static TextureFactory instance;
 	
 	private ObjectMap<String , Texture> pool;
+	
+	public Texture genIcon(String name)
+	{
+		//if specific texture has already in pool return it
+		if(pool.containsKey(name)){
+			return pool.get(name);
+		}
+		//if not , create a new one
+		else{
+			Texture texture = new Texture(Gdx.files.internal("Icon/" + name +".png"));
+			pool.put(name, texture);
+			return texture;
+		}
+	}
 	
 	public Texture genSkin(String name)
 	{
@@ -23,7 +37,6 @@ public class TextureFactory {
 			pool.put(name, texture);
 			return texture;
 		}
-		
 	}
 	
 	//use for gameobject
@@ -35,6 +48,8 @@ public class TextureFactory {
 		}
 		//if not , create a new one
 		else{
+			if(!Gdx.files.internal("Textures/" + name +".png").exists())
+				return null;
 			Texture texture = new Texture(Gdx.files.internal("Textures/" + name +".png"));
 			pool.put(name, texture);
 			return texture;
@@ -54,6 +69,14 @@ public class TextureFactory {
 			return texture;
 		}
 	}
+	
+	//some texture didn't use very often , object will clear the texture by calling this method
+	public void disposeTexture(String name)
+	{
+		pool.get(name).dispose();
+		pool.remove(name);
+	}
+
 	
 	public static TextureFactory getInstance()
 	{

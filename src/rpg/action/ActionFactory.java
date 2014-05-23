@@ -2,12 +2,6 @@ package rpg.action;
 
 import java.lang.reflect.Method;
 
-import rpg.UI.UIFactory;
-import rpg.UI.dialog.Dialog;
-import rpg.action.Action.ActionResult;
-import rpg.core.Scene;
-import rpg.exception.DefinitionError;
-
 public class ActionFactory {
 	
 	private static ActionFactory instance;

@@ -57,8 +57,10 @@ public class SceneEventManager {
 				if(event.isInvoke()){
 					if(event.getInvokeType() == Event.InvokeType.PARALLEL){
 						//if return DONE , event handler will do something according to its type (ex : dispose or reset)
-						if(event.execute() == Event.Result.DONE)
+						if(event.execute() == Event.Result.DONE){
+							System.out.println("Event Done");
 							afterProcess(event);
+						}
 					}
 					else{
 						//switch to jam event process

@@ -1,38 +1,33 @@
 package rpg.component;
 
+import rpg.factory.TextureFactory;
 import rpg.gameobject.GameObject;
-import rpg.texture.TextureFactory;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.utils.Array;
 
 public class Sprite implements Component{
-	//Graphics info
-	protected Texture[] textures;
-	protected int State = 0;
 	
-	public Sprite(String Name , int cState)
+	//Graphics info
+	private String Name;
+	
+	public Sprite(String Name)
 	{
-		//Load textures from assets (depending on name
-		textures = new Texture[cState];
-		for(int i = 0 ; i < cState ; i ++)
-		{
-			textures[i] = TextureFactory.getInstance().genTexture(Name + i);
-			if(textures[i] != null){
-				break;
-			}
-		}
+		this.Name = Name;
 	}
 	
 	//Accessor
 	public Texture getTexture()
 	{
-		return textures[State];
+		return TextureFactory.getInstance().genTexture(Name);
 	}
 	
-	public void setState(int state)
+	public void setTexure(String Name)
 	{
-		this.State = state;
+		this.Name = Name;
 	}
+	
 	@Override
 	public void install(GameObject bind) {
 		// TODO Auto-generated method stub

@@ -3,12 +3,6 @@ package rpg.action;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import rpg.UI.UIFactory;
-import rpg.UI.dialog.Dialog;
-import rpg.core.Scene;
-import rpg.event.Event;
-import rpg.exception.DefinitionError;
-
 public class Action {
 	//Action Result : to notify callers the states of the action
 	public static enum ActionResult{
@@ -19,6 +13,11 @@ public class Action {
 	
 	private Method method;
 	private Object[] params;
+	
+	public String getName()
+	{
+		return method.getName();
+	}
 	
 	public Action(Method method , Object[] params)
 	{
@@ -31,7 +30,7 @@ public class Action {
 		ActionResult result = ActionResult.DONE;
 		
 		try {
-			 method.invoke(null, (Object)params);
+			result = (ActionResult) method.invoke(null, (Object)params);
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -1,12 +1,16 @@
 package rpg.gameobject;
 
 import rpg.component.Animator;
+import rpg.component.CharcterController;
 import rpg.component.Component;
+import rpg.component.ItemBox;
 import rpg.component.PlayerControlPanel;
 import rpg.component.RigidBody;
 import rpg.component.Sprite;
 import rpg.event.Event;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectMap;
@@ -82,6 +86,14 @@ public class GameObject implements Disposable , Comparable{
 	{
 		return (Animator) getComponent("rpg.component.Animator");
 	}
+	public ItemBox getItemBox()
+	{
+		return (ItemBox) getComponent("rpg.component.ItemBox");
+	}
+	public CharcterController getCharacterController()
+	{
+		return (CharcterController) getComponent("rpg.component.CharcterController");
+	}
 	//Setters
 	public void setX(float x)
 	{
@@ -127,6 +139,31 @@ public class GameObject implements Disposable , Comparable{
 			}
 		}
 		
+	}
+	
+	public void render(SpriteBatch batch)
+	{
+		Sprite sprite = getSprite();
+		RigidBody body = getRigidBody();
+		Animator animator = getAnimator();
+			
+		if(sprite != null){
+			Texture texture = sprite.getTexture();
+			int facing = (body != null) ? body.getFacing()/2 - 1 : 2 ;
+			int key = (animator != null) ? animator.getKey() : 0;
+			
+			//Tile width and height
+			int tw = texture.getWidth() / 4;
+			int th = texture.getHeight() / 4;
+			//if draw region is larger than real tile size (temp 32
+			if(tw >= 32 && th >= 32){
+				batch.draw(sprite.getTexture()
+						, x - (tw - 32)/2, y  , tw, th
+						, tw*key , th*facing, tw, th 
+						, false, false);
+			}
+
+		}
 	}
 	
 	@Override

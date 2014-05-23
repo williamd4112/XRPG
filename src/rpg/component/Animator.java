@@ -4,26 +4,34 @@ import rpg.gameobject.GameObject;
 
 //Usage : only handling to make a animation , not include control when stop when start
 public class Animator implements Component {
+	
 	//Binding object
-	//if has a rigidbody , animator should do animation with movement
 	private GameObject bind;
-	private RigidBody body;
+	
 	//Animation info
-	private int frame;
-	private int key;
-	private int frequency;
+	private int frame = 0;
+	private int key = 0;
+	private int frequency = 4;
 	
 	public Animator(int frequency)
 	{
 		//initialize animation info
-		this.frame = 0; 
-		this.key = 0;
 		this.frequency = frequency; 
+	}
+	
+	public Animator()
+	{
+		
 	}
 	
 	public int getKey()
 	{
 		return key;
+	}
+	
+	public void setFrequency(int freq)
+	{
+		this.frequency = freq;
 	}
 		
 	//Component owner will use this to update self key , so that renderer will be able to get the refreshed key
@@ -40,22 +48,24 @@ public class Animator implements Component {
 			frame++;
 		}
 	}
+	
+	//Reset the animation key (ex : use at make attack , and some animation except movement
+	public void reset()
+	{
+		frame = 0;
+		key = 0;
+	}
 
 	@Override
 	public void install(GameObject bind) {
 		 this.bind = bind;
-		 this.body = bind.getRigidBody();
 	}
 
 	@Override
-	public void update() {
+	public void update() 
+	{
 		//Check if bind has a rigid body
-		if(body != null){
-			if(body.moving() || key != 0)
-				doAnimation();
-		}
-		else
-			doAnimation();
+		//doAnimation();
 	}
 
 	@Override

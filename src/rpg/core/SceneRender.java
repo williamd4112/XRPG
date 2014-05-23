@@ -1,11 +1,12 @@
 package rpg.core;
 
+import rpg.UI.UI;
 import rpg.component.Animator;
 import rpg.component.RigidBody;
 import rpg.component.Sprite;
-import rpg.font.FontFactory;
+import rpg.factory.FontFactory;
+import rpg.factory.TextureFactory;
 import rpg.gameobject.GameObject;
-import rpg.texture.TextureFactory;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -39,10 +40,8 @@ public class SceneRender {
 	private int height;
 	
 	//Dialog display temp
-	private Texture background;
 	private char[] tmp;
 	private int key = 0;
-	private BitmapFont font;
 	
 	public int getWidth()
 	{
@@ -74,8 +73,6 @@ public class SceneRender {
 		//build a shape renderer
 		this.shapeRender = new ShapeRenderer();
 		
-		//Dialog
-		this.background = TextureFactory.getInstance().genSkin("01-Dialog");
 		
 	}
 	
@@ -96,47 +93,54 @@ public class SceneRender {
 		batch.begin();
 			renderGameObject();
 			renderTopLayer();	
-			renderDialog();
+			renderUI();
 		batch.end();
 	}
 	
 	public void resize(int w , int h)
 	{
-		this.width = w;
-		this.height = h;
-		this.font = FontFactory.genFont("AGaramondPro-Regular.otf", height);
+		width = w;
+		height = h;
+	}
+	
+	private void renderUI()
+	{
+		int x = (int) (scene.getCamera().position.x - width / 2);
+		int y = (int) (scene.getCamera().position.y - height / 2);
+		int w = (int) width;
+		int h = (int) height;
+		
+		if(scene.UIManager.isEmptyStack())
+			return;
+		for(UI ui : scene.UIManager.getStack()){
+			//Render Dialog
+			if(ui.getClass().getName().equals("rpg.UI.dialog.Dialog")){
+				//Pass the screen info
+ 				ui.render(batch , x, y, w, h);
+				ui.render(batch, scene.UIManager.getBuffer() , x, y, w, h);
+			}
+			else if(ui.getClass().getName().equals("rpg.UI.menu.Menu_Pause")){
+				//Pass the screen info
+				ui.render(batch , x, y, w, h);
+			}
+			else if(ui.getClass().getName().equals("rpg.UI.menu.Menu_Item")){
+				ui.render(batch, x, y, w, h);
+			}
+		}
 		
 	}
 	
-	private void renderMenu()
-	{
-		
-	}
-	
-	private void renderDialog()
-	{
-		if(scene.UIManager.getDialogBox() == null || font == null || scene.UIManager.getBuffer() == null)
-			return;
-		if(scene.UIManager.getDialogBox().size < 1)
-			return;
-		Color c = batch.getColor();
-		int x = (int) (scene.getCamera().position.x - scene.getRenderer().getWidth() / 2  + 32);
-		int y = (int) (scene.getCamera().position.y - scene.getRenderer().getHeight() / 2  + 32);
-		int w = scene.getRenderer().getWidth() - 64;
-		int h = scene.getRenderer().getHeight()/3;
-		
-		batch.setColor(c.r, c.g ,c.b, 0.5f);
-			batch.draw(background , x , y , w , h);
-		batch.setColor(c.r, c.g ,c.b, 1.0f);
-		
-		font.drawWrapped(batch, String.valueOf(scene.UIManager.getBuffer()), x + 15 , y + h - 15, w);
-	}
 	private void renderGameObject()
 	{
 		Array<GameObject> gameobjectlist = scene.objectManager.getObjectlist();
 		gameobjectlist.sort();
 		
 		for(GameObject obj : gameobjectlist){
+			batch.setProjectionMatrix(this.scene.observer.combined);
+			obj.render(batch);
+		}
+		
+		/*for(GameObject obj : gameobjectlist){
 			Sprite sprite = obj.getSprite();
 			RigidBody body = obj.getRigidBody();
 			Animator animator = obj.getAnimator();
@@ -151,8 +155,7 @@ public class SceneRender {
 						, 32*key , 48*facing, 32, 48 
 						, false, false);
 			}
-
-		}
+		}*/
 	}
 	
 	private void renderTopLayer()
@@ -178,24 +181,24 @@ public class SceneRender {
 			}
 		shapeRender.end();
 		
-		//Gdx.gl.glEnable(GL20.GL_BLEND);
-		//Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		
-		//shapeRender.setColor(1.0f , 0.0f , 0.0f , 0.3f);
-		//shapeRender.setProjectionMatrix(this.scene.observer.combined);
+		shapeRender.setColor(1.0f , 0.0f , 0.0f , 0.3f);
+		shapeRender.setProjectionMatrix(this.scene.observer.combined);
 		
-		//shapeRender.begin(ShapeType.Filled);
-			//for(GameObject character : scene.getObjectlist()){
-				//RigidBody body = character.getRigidBody();
-				//if(body != null){
-					//shapeRender.rect(body.getRealX(), body.getRealY(), 32, 32);
-					//shapeRender.rect(body.getDestX(), body.getDestY(), 32, 32);
-				//}
+		shapeRender.begin(ShapeType.Filled);
+			for(GameObject character : scene.objectManager.getObjectlist()){
+				RigidBody body = character.getRigidBody();
+				if(body != null){
+					shapeRender.rect(body.getRealX(), body.getRealY(), 32, 32);
+					shapeRender.rect(body.getDestX(), body.getDestY(), 32, 32);
+				}
 			
-			//}
-		//shapeRender.end();
+			}
+		shapeRender.end();
 		
-		//Gdx.gl.glDisable(GL20.GL_BLEND);
+		Gdx.gl.glDisable(GL20.GL_BLEND);
 	}
 	
 }

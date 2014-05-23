@@ -1,75 +1,84 @@
 package rpg.UI.dialog;
 
+import rpg.UI.UI;
+import rpg.core.Scene;
+import rpg.factory.FontFactory;
+import rpg.factory.TextureFactory;
+import rpg.factory.FontFactory.FontType;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 
-import rpg.UI.UISkin;
-import rpg.action.Action;
-import rpg.controller.ControlPanel;
-import rpg.core.GameSystem;
-import rpg.core.Scene;
-import rpg.texture.TextureFactory;
-
 //Remember , all class except renderer only hold non-graphical data
 
-public class Dialog implements InputProcessor {
-	
-	//Previous Control Panel ( maybe a dialog , too
-	protected InputProcessor previousControl;
-	//Scene which dialog in
-	protected Scene scene;
+public class Dialog extends UI implements InputProcessor {
+
 	//store the dialog page in string (Scene will process this string , analyze \n)
 	protected Array<String> context;
+	//Background texture
+	protected String background = "01-Dialog";
 	//head picture (optional)
 	protected String head;
 	//body picture (optional)
 	protected String body;
+	//Font
+	protected String font = "AGaramondPro-Regular.otf";
 	//context index
 	protected int index = 0;
-	//render will char by char write out the context , this is speed
-	protected long writeInterval = 5;
-	//fade in , fade out speed;
-	protected long fadeInterval = 5;
-	//width , height will depend on screen width and height
-	protected int width;
-	protected int height;
 	
-	public long getWriteInterval()
+	public Dialog()
 	{
-		return writeInterval;
-	}
-	
-	public Dialog(Scene scene)
-	{
+		super();
 		this.context = new Array<String>();
-		this.scene = scene;
 		
 	}
+	
+	/*************Override Method************/
+	//post to scene
+	@Override
+	public void post()
+	{
+		super.post();
+		reset();
+	}
+	@Override
+	//Tell renderer how to render background
+	public void render(SpriteBatch batch , int x , int y , int w , int h)
+	{
+		x = x + 32;
+		y = y + 32;
+		w = w - 64;
+		h /= 3;
+		Color c = batch.getColor();		
+		batch.setColor(c.r, c.g ,c.b, 0.5f);
+		batch.draw(TextureFactory.getInstance().genSkin(background) , x , y , w , h);
+		batch.setColor(c.r, c.g ,c.b, 1.0f);
+	}
+	@Override
+	//Tell renderer how to render text
+	public void render(SpriteBatch batch , char[] buffer , int x , int y , int w , int h)
+	{
+		BitmapFont text = FontFactory.getInstance().genFont(FontType.DIALOG ,h);
+		x = x + 32;
+		y = y + 32;
+		w = w - 64;
+		h /= 3;
+		batch.setColor(Color.WHITE);
+		text.drawWrapped(batch, String.valueOf(buffer), x + 15 , y + h - 15, w);
+	}
+	
+	/*************Self Method**************/
 	//reset page
 	public void reset()
 	{
 		index = 0;
 	}
-	//post a dialog to the scene
-	public void postDialog()
-	{
-		this.scene.getUIManager().addDialog(this);
-	}
-	
-	//request controll from system
-	public void requestControl()
-	{
-		//Store previous
-		this.previousControl = Gdx.input.getInputProcessor();
-		//and then add self
-		Gdx.input.setInputProcessor(this);
-	}
-	
 	//to add new context
 	public void addPage(String text)
 	{
@@ -94,15 +103,8 @@ public class Dialog implements InputProcessor {
 		index++;
 		//Over the bound
 		if(index == context.size){
-			closeDialog();
+			close();
 		}
-	}
-	
-	//Close dialog
-	public void closeDialog()
-	{
-		System.out.println("back");
-		Gdx.input.setInputProcessor(previousControl);
 	}
 
 	/***************Control Panel***************/

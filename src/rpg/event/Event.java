@@ -1,18 +1,14 @@
 package rpg.event;
 
-import java.util.Iterator;
-
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ObjectMap;
-
-import java.lang.reflect.Method;
-
 import rpg.action.Action;
-import rpg.action.ActionFactory;
 import rpg.action.Action.ActionResult;
+import rpg.action.ActionFactory;
 import rpg.core.GameSystem;
 import rpg.core.Scene;
 import rpg.gameobject.GameObject;
+import rpg.item.Item;
+
+import com.badlogic.gdx.utils.Array;
 
 public class Event {
 	
@@ -52,13 +48,16 @@ public class Event {
 	private Array<Action> actionslist;
 	private int index = 0;
 	
-	//if choose binding object method to create event
+	//ObjectEvent args
 	private GameObject bind;
 	
-	//binding coordinate
+	//SceneEvent args
 	private Scene scene;
 	private int x;
 	private int y;
+	
+	//ItemEvent args
+	private Item item;
 	
 	//Type
 	private InvokeType invokeType;
@@ -98,6 +97,20 @@ public class Event {
 			paramsFormat[0] = Object[].class;
 		}
 	}
+	//Item event (always trigger when use
+	public Event(Item item , InvokeType invokeType , CycleType cycleType)
+	{
+		this.item = item;
+		this.invokeType = invokeType;
+		this.triggerType = TriggerType.INTERACT;
+		this.cycleType = cycleType;
+		//set up params format
+		if(paramsFormat == null){
+			paramsFormat = new Class[1];
+			paramsFormat[0] = Object[].class;
+		}
+	}
+	
 	//eventhandler will use this method to check is invoke
 	public boolean isInvoke()
 	{
@@ -127,8 +140,10 @@ public class Event {
 		
 		Action action = ActionFactory.getInstance().createAction(type,params);
 		
-		if(action != null)
+		if(action != null){
 			actionslist.add(action);
+			//System.out.println("Event : " + type +  " added");
+		}
 	}
 		
 	//Set invoke true , in that way , EventHandler will process this event when it check
@@ -150,8 +165,10 @@ public class Event {
 			switch(result){
 			case DONE:
 				index++;
-				if(index == actionslist.size)
+				if(index == actionslist.size){
 					return Result.DONE;
+				}
+				break;
 			case WAIT:
 				return Result.DOING;
 			case ABORT:

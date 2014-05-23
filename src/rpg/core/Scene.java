@@ -3,7 +3,6 @@ package rpg.core;
 import java.util.Arrays;
 
 import rpg.UI.dialog.Dialog;
-import rpg.controller.SceneCamera;
 import rpg.gameobject.GameObject;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;

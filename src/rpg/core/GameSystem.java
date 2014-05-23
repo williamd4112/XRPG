@@ -1,6 +1,9 @@
 package rpg.core;
 
+import rpg.component.ItemBox;
 import rpg.component.PlayerControlPanel;
+import rpg.exception.DefinitionError;
+import rpg.factory.ItemFactory;
 import rpg.gameobject.Character;
 
 public class GameSystem {
@@ -14,12 +17,11 @@ public class GameSystem {
 		STOP    //in dialog
 	};
 	
-	//member variable
+	//member variables
 	//Player : let all object can access present player
-	//controller : current controlpanel
-	//itembox : store player item
 	private GameState state = GameState.NORMAL;
 	private Character player;
+	private Scene currentScene;
 	
 	//Accessor
 	//getPlayer : get current player
@@ -32,12 +34,22 @@ public class GameSystem {
 	{
 		return this.state;
 	}
+	//getScene :
+	public Scene getScene()
+	{
+		return this.currentScene;
+	}
 
 	//setters
 	//setPlayer : set current player
    	public void setPlayer(Character player)
    	{
    		this.player = player;
+   	}
+   	//
+   	public void setScene(Scene scene)
+   	{
+   		this.currentScene = scene;
    	}
    	//Stop : stop all object's automatically update (graphic excluded
    	public void stop()
@@ -58,8 +70,16 @@ public class GameSystem {
 			instance = new GameSystem();
 			
 			//create a new player
-			instance.player = new Character("chr", 0, 1 , 64 , 64);
+			instance.player = new Character("Hero", 0, 2 , 64 , 64);
 			instance.player.addComponent(new PlayerControlPanel());
+			instance.player.addComponent(new ItemBox());
+			
+			instance.player.getItemBox().addItem("Herb");
+			instance.player.getItemBox().addItem("Herb");
+			instance.player.getItemBox().addItem("Herb");
+			instance.player.getItemBox().addItem("Red Potion");
+			instance.player.getItemBox().showAll();
+	
 	
 			return instance;
 		}

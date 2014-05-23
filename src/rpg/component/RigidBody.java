@@ -6,18 +6,18 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.IntArray;
 
+import rpg.alogrithm.Alogrithm;
 import rpg.event.Event;
 import rpg.gameobject.GameObject;
 import rpg.phys.Line2D;
 
 //Usage : apply to game object making it have a "Instance" in the game world
 public class RigidBody extends Rectangle implements Component{
-	
 	//Binding object
 	final GameObject bind;
 	
 	//Movement info
-	private IntArray commandlist;
+	//private IntArray commandlist;
 	private boolean isFixFacing;
 	private int direction;
 	private int facing;
@@ -64,6 +64,12 @@ public class RigidBody extends Rectangle implements Component{
 		return facing;
 	}
 	
+	//Setters
+	public void setSpeed(int speed)
+	{
+		this.speed = speed;
+	}
+	
 	public RigidBody(GameObject bind , int initX , int initY)
 	{
 		//Sync with binding object at initial
@@ -74,10 +80,10 @@ public class RigidBody extends Rectangle implements Component{
 		this.desty = initY;
 		
 		//finally initialize movement info
-		this.commandlist = new IntArray();
+		//this.commandlist = new IntArray();
 		this.direction = 2;
 		this.facing = 2;
-		this.speed = 4; //temporary
+		this.speed = 2; //temporary
 	}
 	
 	@Override
@@ -87,12 +93,8 @@ public class RigidBody extends Rectangle implements Component{
 	}
 
 	@Override
-	public void update() {
-		//Update new coordinate to binding object
-		updateMove();
-		executeCommand();
-		bind.setX(x);
-		bind.setY(y);
+	public void update() 
+	{			
 	}
 
 	@Override
@@ -100,7 +102,6 @@ public class RigidBody extends Rectangle implements Component{
 		// TODO Auto-generated method stub
 		
 	}
-	
 	
 	/***********************Interact**************************/
 	/***********************Start*****************************/
@@ -133,120 +134,94 @@ public class RigidBody extends Rectangle implements Component{
 	
 	/**********************Movement info**********************/
 	/***********************Start*****************************/
-	//executeCommand : execute commands in the commands list
-	public void executeCommand()
-	{
-			//command list is empty
-			if(commandlist.size < 1)
-				return ;
-			
-			boolean result = false;
-			int index = 0;
-			
-			//find the command which not yet execute
-			while(commandlist.get(index) == -1){
-				index++;
-				//no commands in the list , reset the commandlist
-				if(index == commandlist.size){
-					commandlist.clear();
-					return;
-				}
-			}
-			
-			//execute command
-			switch(commandlist.get(index)){
-			case 0:
-				result = forward();
-				break;
-			case 1:
-				result = moveDown();
-				break;
-			case 2:
-				result = moveLeft();
-				break;
-			case 3:
-				result = moveRight();
-				break;
-			case 4:
-				result = moveUp();
-				break;
-			case 5:
-				result = turnDown();
-				break;
-			case 6:
-				result = turnLeft();
-				break;
-			case 7:
-				result = turnRight();
-				break;
-			case 8:
-				result = turnUp();
-				break;
-			}
-			
-			//if true , then that command is done , mark it with -1
-			if(result)
-				commandlist.set(index, -1); 
-			
-	}
-	
-	//Add a move command
-	public void addCommand(int code)
-	{
-		if(this.commandlist == null)
-			this.commandlist = new IntArray();
-		this.commandlist.add(code);
-	}
-	public void addCommand(int[] codes)
-	{
-		if(this.commandlist == null)
-			this.commandlist = new IntArray();
-		this.commandlist.addAll(codes);
-	}
-		
 	//Moving : check is on the move
-	public boolean moving()
+	public boolean isMoving()
 	{
-			//dest != real x
-			if((this.destx != getRealX() || this.desty != getRealY()))
-				//direction != block
-				if(direction != isBlock){
-					return true;
-				}
-				else{
-					//Push back the dest
-					this.destx = getRealX();
-					this.desty = getRealY();
-				}
-			
-			return false;
+		switch(direction){
+		case 2:
+			if(this.desty < getRealY() && this.destx == getRealX() && !isBlock())
+				return true;
+		case 4:
+			if(this.destx < getRealX() && this.desty == getRealY() && !isBlock())
+				return true;
+		case 6:
+			if(this.destx > getRealX() && this.desty == getRealY() && !isBlock())
+				return true;
+		case 8:
+			if(this.desty > getRealY() && this.destx == getRealX() && !isBlock())
+				return true;
+		}
+		return false;
 	}
+	public boolean isBlock()
+	{				
+		//direction != block
+		if(direction != isBlock)
+			return false;
+		else
+			return true;
+	}
+	public void stop()
+	{
+		//fix real x
+		if(getRealX() < destx){
+			x = Alogrithm.fix((int) x, true);
+		}
+		else{
+			x = Alogrithm.fix((int) x, false);
+		}
 		
+		if(getRealX() < desty){
+			y = Alogrithm.fix((int) y, true);
+		}
+		else{
+			y = Alogrithm.fix((int) y, false);
+		}
+		
+		this.destx = getRealX();
+		this.desty = getRealY();
+	}
 	//update move
 	public void updateMove()
 	{
-			if(moving()){
-				switch(direction){
-				case 2:
+			if(isMoving()){
+				//Instead of use direction to judge where to move , use relative coordinate to dest
+				if(this.destx == getRealX() && this.desty < getRealY())
 					this.y -= speed;
-					break;
-				case 4:
+				else if(this.destx < getRealX() && this.desty == getRealY())
 					this.x -= speed;
-					break;
-				case 6:
+				else if(this.destx > getRealX() && this.desty == getRealY())
 					this.x += speed;
-					break;
-				case 8:
+				else if(this.destx == getRealX() && this.desty > getRealY())
 					this.y += speed;
-					break;
-				}
-			}			
+			}		
+			else
+				stop();
+			
+			bind.setX(x);
+			bind.setY(y);
 	}
-	//forward : step one tile along current direction
+	//true : done ; false : previous movement is still on
+	public boolean dash()
+	{
+		if(!isMoving()){
+			speed = 4;
+			return true;
+		}
+		return false;
+	}
+	public boolean walk()
+	{	
+		if(!isMoving()){
+			speed = 2;
+			return true;
+		}
+		return false;
+	}
 	public boolean forward()
 	{
 			//if dest != real , that object is on the move
-			if(moving()){
+			if(isMoving()){
 				return false;
 			}
 			
@@ -273,8 +248,9 @@ public class RigidBody extends Rectangle implements Component{
 	}
 	public boolean moveDown()
 	{
-			if(!moving()){
+			if(!isMoving()){
 				turnDown();
+				//this.desty = getRealY() - 32;
 				forward();
 				return true;
 			}
@@ -282,8 +258,9 @@ public class RigidBody extends Rectangle implements Component{
 	}
 	public boolean moveLeft()
 	{
-			if(!moving()){
+			if(!isMoving()){
 				turnLeft();
+				//this.destx = getRealX() - 32;
 				forward();
 				return true;
 			}
@@ -291,8 +268,9 @@ public class RigidBody extends Rectangle implements Component{
 	}
 	public boolean moveRight()
 	{
-			if(!moving()){
+			if(!isMoving()){
 				turnRight();
+				//this.destx = getRealX() + 32;
 				forward();
 				return true;
 			}
@@ -300,8 +278,9 @@ public class RigidBody extends Rectangle implements Component{
 	}
 	public boolean moveUp()
 	{
-			if(!moving()){
+			if(!isMoving()){
 				turnUp();
+				//this.desty = getRealY() + 32;
 				forward();
 				return true;
 			}
@@ -313,7 +292,7 @@ public class RigidBody extends Rectangle implements Component{
 		}
 	public boolean turnDown()
 	{
-			if(!moving()){
+			if(!isMoving()){
 				direction = 2;
 				if(!isFixFacing)
 					facing = 2;
@@ -323,7 +302,7 @@ public class RigidBody extends Rectangle implements Component{
 	}
 	public boolean turnUp()
 	{
-			if(!moving()){
+			if(!isMoving()){
 				direction = 8;
 				if(!isFixFacing)
 					facing = 8;
@@ -333,7 +312,7 @@ public class RigidBody extends Rectangle implements Component{
 	}
 	public boolean turnLeft()
 	{
-			if(!moving()){
+			if(!isMoving()){
 				direction = 4;
 				if(!isFixFacing)
 					facing = 4;
@@ -343,7 +322,7 @@ public class RigidBody extends Rectangle implements Component{
 	}
 	public boolean turnRight()
 	{
-			if(!moving()){
+			if(!isMoving()){
 				direction = 6;
 				if(!isFixFacing)
 					facing = 6;
@@ -538,5 +517,6 @@ public class RigidBody extends Rectangle implements Component{
 	}
 	/***********************Physic****************************/
 	/***********************End*******************************/
+
 
 }
